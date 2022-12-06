@@ -119,15 +119,19 @@ module forward_unit(EXMEM_rd, EXMEM_RegWrite, MEMWB_rd, MEMWB_RegWrite, IDEX_rt,
         FwA = 2'b00;
         FwB = 2'b00;
 
-        if (EXMEM_RegWrite && EXMEM_rd != 5'b0 && EXMEM_rd == IDEX_rs)
-            FwA = 2'b10;
-        if (EXMEM_RegWrite && EXMEM_rd != 5'b0 && EXMEM_rd == IDEX_rt)
-            FwB = 2'b10;
+        if (EXMEM_RegWrite && EXMEM_rd != 5'b0) begin
+            if (EXMEM_rd == IDEX_rs)
+                FwA = 2'b10;
+            if (EXMEM_rd == IDEX_rt)
+                FwB = 2'b10;
+        end
 
-        if (MEMWB_RegWrite && MEMWB_rd != 5'b0 && MEMWB_rd == IDEX_rs && (EXMEM_rd != IDEX_rs || ~EXMEM_RegWrite))
-            FwA = 2'b01;
-        if (MEMWB_RegWrite && MEMWB_rd != 5'b0 && MEMWB_rd == IDEX_rt && (EXMEM_rd != IDEX_rt || ~EXMEM_RegWrite))
-            FwB = 2'b01;
+        if (MEMWB_RegWrite && MEMWB_rd != 5'b0) begin
+            if (MEMWB_rd == IDEX_rs && (EXMEM_rd != IDEX_rs || ~EXMEM_RegWrite))
+                FwA = 2'b01;
+            if (MEMWB_rd == IDEX_rt && (EXMEM_rd != IDEX_rt || ~EXMEM_RegWrite))
+                FwB = 2'b01;
+        end
     end
 endmodule          
                        

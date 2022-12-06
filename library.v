@@ -11,11 +11,11 @@
 //             sllv        (op = 14)
 //             sll         (op = 15)
 module ALU #(parameter N = 32) (out, zero, inA, inB, op, shamt);
-    output reg [N - 1:0] out;
-    output               zero;
-    input      [N - 1:0] inA, inB;
-    input      [3:0]     op;
-    input      [4:0]     shamt;
+    output reg [N-1:0] out;
+    output             zero;
+    input      [N-1:0] inA, inB;
+    input      [3:0]   op;
+    input      [4:0]   shamt;
 
 
     always @(inA, inB, op) begin
@@ -44,10 +44,10 @@ endmodule
 // Write: enable wen, disable ren, address addr, data din.
 module Memory (clock, reset, ren, wen, addr, din, dout);
     input         clock, reset, ren, wen;
-    input[31:0]   addr, din;
-    output[31:0]  dout;
+    input  [31:0] addr, din;
+    output [31:0] dout;
 
-    reg[31:0]     data[0:4095];
+    reg    [31:0] data[0:4095];
 
     always @(ren, wen) begin // It does not correspond to hardware. Just for error detection
         if (ren & wen) begin
@@ -61,8 +61,10 @@ module Memory (clock, reset, ren, wen, addr, din, dout);
         end
     end  
 
+    // Read
     assign dout = (reset && ~wen && ren) ? data[addr[9:0]] : 32'bx;  
     
+    // Write
     always @(negedge clock) begin
         if (reset && wen && ~ren) begin
             data[addr[9:0]] = din;
@@ -75,14 +77,14 @@ endmodule
 //                            address raB, data rdB
 //                Write port: address wa, data wd, enable wen.
 module RegFile (clock, reset, raA, raB, wa, wen, wd, rdA, rdB);
-    input             clock, reset;
-    input      [4:0]  raA, raB, wa;
-    input             wen;
-    input      [31:0] wd;
-    output     [31:0] rdA, rdB;
+    input          clock, reset;
+    input   [4:0]  raA, raB, wa;
+    input          wen;
+    input   [31:0] wd;
+    output  [31:0] rdA, rdB;
 
-    reg signed [31:0] data[0:31];
-    integer           i;
+    reg     [31:0] data[0:31];
+    integer        i;
 
     always @(negedge clock, negedge reset) begin
         if (~reset) begin
