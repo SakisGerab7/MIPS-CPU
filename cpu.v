@@ -176,18 +176,18 @@ module cpu(clock, reset);
             EXMEM_MemWriteData <= MemWriteData;
             EXMEM_Zero         <= Zero;
             if (EX_Flush) begin
-                EXMEM_Branch       <= 2'b0;
-                EXMEM_MemRead      <= 1'b0;
-                EXMEM_MemWrite     <= 1'b0;
-                EXMEM_MemToReg     <= 1'b0;
-                EXMEM_RegWrite     <= 1'b0;
+                EXMEM_Branch   <= 2'b0;
+                EXMEM_MemRead  <= 1'b0;
+                EXMEM_MemWrite <= 1'b0;
+                EXMEM_MemToReg <= 1'b0;
+                EXMEM_RegWrite <= 1'b0;
             end
             else begin
-                EXMEM_Branch       <= IDEX_Branch;
-                EXMEM_MemRead      <= IDEX_MemRead;
-                EXMEM_MemWrite     <= IDEX_MemWrite;
-                EXMEM_MemToReg     <= IDEX_MemToReg;
-                EXMEM_RegWrite     <= IDEX_RegWrite;
+                EXMEM_Branch   <= IDEX_Branch;
+                EXMEM_MemRead  <= IDEX_MemRead;
+                EXMEM_MemWrite <= IDEX_MemWrite;
+                EXMEM_MemToReg <= IDEX_MemToReg;
+                EXMEM_RegWrite <= IDEX_RegWrite;
             end
         end
     end

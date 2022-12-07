@@ -20,7 +20,7 @@ module cpu_tb;
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     // Initialization and signal generation
-    initial  begin 
+    initial begin 
         clock = 1'b0;       
         reset = 1'b0; // Apply reset for a few cycles
         #(4.25 * `clock_period)
@@ -67,29 +67,28 @@ module cpu_tb;
     end  
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    always@(posedge clock) begin
+    always @(posedge clock) begin
         if (cpu0.PC <= 120)
-            $display ("PC: %4d | %s",cpu0.PC, stringvar);
+            $display ("PC: %4d | %s", cpu0.PC, stringvar);
     end
 
     // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     initial begin
-        f = $fopen("output.txt","w");
+        f = $fopen("output.txt", "w");
         iter = 1;
     end
 
-
     reg [31:0] PC_prv;
 
-    always@(posedge clock) begin // ASSUME that the register file is written at the POSITIVE edge of the clock
+    always @(posedge clock) begin // ASSUME that the register file is written at the POSITIVE edge of the clock
         PC_prv <= cpu0.PC;
 
         #(`clock_period/10);
-        if ((iter == 1) && (PC_prv == 44) && (cpu0.PC == 44)) $fwrite(f,"STALL lw --> beq\n");
-        if ((iter == 1) && (PC_prv == 72) && (cpu0.PC == 72)) $fwrite(f,"STALL lw --> addi\n");
-        if ((iter == 2) && (cpu0.PC == 24) && (cpu0.IFID_instr == 32'b0)) $fwrite(f,"FLUSH J \n");
-        if ((iter == 2) && (PC_prv == 44) && (cpu0.PC == 44)) $fwrite(f,"STALL lw --> beq\n");
-        if ((iter == 2) && (cpu0.PC == 88)) $fwrite(f,"FLUSH BEQ\n");
+        if ((iter == 1) && (PC_prv == 44) && (cpu0.PC == 44)) $fwrite(f, "STALL lw --> beq\n");
+        if ((iter == 1) && (PC_prv == 72) && (cpu0.PC == 72)) $fwrite(f, "STALL lw --> addi\n");
+        if ((iter == 2) && (cpu0.PC == 24) && (cpu0.IFID_instr == 32'b0)) $fwrite(f, "FLUSH J \n");
+        if ((iter == 2) && (PC_prv == 44) && (cpu0.PC == 44)) $fwrite(f, "STALL lw --> beq\n");
+        if ((iter == 2) && (cpu0.PC == 88)) $fwrite(f, "FLUSH BEQ\n");
 
         if ((iter == 1) && (PC_prv != cpu0.PC)) begin
             case (cpu0.PC)
@@ -179,8 +178,8 @@ module string_manipulation(clock, reset, PCSrc, bubble, instr0, instr1, stringva
     input               PCSrc, bubble;
     input      [31:0]   instr0, instr1;
     output reg [8*26:1] stringvar;
-    wire       [39:0]   stringvar0,stringvar1,stringvar2,stringvar3,stringvar4;
-    reg        [39:0]   s0, s1, s2, s3,s4;
+    wire       [39:0]   stringvar0, stringvar1, stringvar2, stringvar3, stringvar4;
+    reg        [39:0]   s0, s1, s2, s3, s4;
     reg        [31:0]   instr2, instr3, instr4, PC_prv;
     reg                 PCSrc_d0, PCSrc_d1, PCSrc_d2;
     reg                 bubble_d0, bubble_d1, bubble_d2;
@@ -200,7 +199,7 @@ module string_manipulation(clock, reset, PCSrc, bubble, instr0, instr1, stringva
         s2 = ((PCSrc == 1) || (PCSrc_d0 == 1) || (PCSrc_d1 == 1) || (bubble_d0 == 1)) ? "----" : stringvar2;
         s3 = ((PCSrc_d0 == 1) || (PCSrc_d1 == 1) || (PCSrc_d2 == 1) || (bubble_d1 == 1)) ? "----" : stringvar3;
         s4 = ((PCSrc_d1 == 1) || (PCSrc_d2 == 1) || (bubble_d2 == 1)) ? "----" : stringvar4;
-        stringvar = {s0, s1, s2, s3, s4};
+        stringvar = { s0, s1, s2, s3, s4 };
     end
 
 
