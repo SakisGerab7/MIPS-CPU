@@ -25,7 +25,7 @@ module cpu_tb;
         reset = 1'b0; // Apply reset for a few cycles
         #(4.25 * `clock_period)
         reset = 1'b1;
-        #(50 * `clock_period)
+        #(45 * `clock_period)
         $finish; // Need to adjust to the number of executed instructions
     end
 

@@ -1,10 +1,10 @@
 [*]
 [*] GTKWave Analyzer v3.3.103 (w)1999-2019 BSI
-[*] Wed Dec  7 17:00:26 2022
+[*] Wed Dec  7 17:41:12 2022
 [*]
 [dumpfile] "/home/sakis/dev/mips/tb_dumpfile.vcd"
-[dumpfile_mtime] "Wed Dec  7 16:59:47 2022"
-[dumpfile_size] 95477
+[dumpfile_mtime] "Wed Dec  7 17:41:00 2022"
+[dumpfile_size] 95062
 [savefile] "/home/sakis/dev/mips/waveform.gtkw"
 [timestart] 0
 [size] 1920 1016

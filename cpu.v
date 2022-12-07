@@ -11,7 +11,7 @@ module cpu(clock, reset);
     // IFID
     reg [31:0] IFID_PCplus4, IFID_instr;
     // IDEX
-    reg [31:0] IDEX_rdA, IDEX_rdB, IDEX_signExtend, IDEX_PCplus4;
+    reg [31:0] IDEX_signExtend, IDEX_PCplus4;
     reg [4:0]  IDEX_instr_rt, IDEX_instr_rs, IDEX_instr_rd;                            
     reg [1:0]  IDEX_ALUcntrl, IDEX_Branch;
     reg        IDEX_RegDst, IDEX_ALUSrc, IDEX_MemRead, IDEX_MemWrite, IDEX_MemToReg, IDEX_RegWrite;
@@ -39,26 +39,27 @@ module cpu(clock, reset);
 
     /***************** Instruction Fetch Unit (IF)  ****************/
     always @(posedge clock, negedge reset) begin 
-        if (reset == 1'b0)     
+        if (~reset)     
             PC <= -1;     
         else if (PC == -1)
             PC <= 0;
-        else if (PCWrite == 1'b1)
+        else if (PCWrite == 1'b1) begin
             if (Jump)
                 PC <= PCJump;
             else if (PCSrc)
                 PC <= EXMEM_PCBranch;
             else
                 PC <= PC + 4;
+        end
     end
     
     // IFID pipeline register
     always @(posedge clock, negedge reset) begin 
-        if (reset == 1'b0 || IF_Flush) begin
+        if (~reset || IF_Flush) begin
             IFID_PCplus4 <= 32'b0;    
             IFID_instr   <= 32'b0;
         end 
-        else if (IFID_Write == 1'b1) begin
+        else if (IFID_Write) begin
             IFID_PCplus4 <= PC + 32'd4;
             IFID_instr   <= instr;
         end
@@ -83,10 +84,8 @@ module cpu(clock, reset);
 
     // IDEX pipeline register
     always @(posedge clock, negedge reset) begin 
-        if (reset == 1'b0) begin
+        if (~reset) begin
             IDEX_PCplus4    <= 32'b0;
-            IDEX_rdA        <= 32'b0;    
-            IDEX_rdB        <= 32'b0;
             IDEX_signExtend <= 32'b0;
             IDEX_instr_rd   <= 5'b0;
             IDEX_instr_rs   <= 5'b0;
@@ -102,8 +101,6 @@ module cpu(clock, reset);
         end 
         else begin
             IDEX_PCplus4    <= IFID_PCplus4;
-            IDEX_rdA        <= rdA;
-            IDEX_rdB        <= rdB;
             IDEX_signExtend <= signExtend;
             IDEX_instr_rd   <= instr_rd;
             IDEX_instr_rs   <= instr_rs;
@@ -140,14 +137,12 @@ module cpu(clock, reset);
                             
     /***************** Execution Unit (EX)  ****************/   
     assign ALUInA = (FwA == 2'b10) ? EXMEM_ALUOut :
-                    (FwA == 2'b01) ? wRegData :
-                    IDEX_rdA;
+                    (FwA == 2'b01) ? wRegData : rdA;
     assign MemWriteData = (FwB == 2'b10) ? EXMEM_ALUOut :
-                          (FwB == 2'b01) ? wRegData :
-                          IDEX_rdB;
+                          (FwB == 2'b01) ? wRegData : rdB;
     assign ALUInB = (IDEX_ALUSrc == 1'b1) ? IDEX_signExtend : MemWriteData;
     assign shamt = IDEX_signExtend[10:6];
-    
+    assign func = IDEX_signExtend[5:0];
     assign PCBranch = IDEX_PCplus4 + (IDEX_signExtend << 2);
 
     //  ALU
@@ -157,7 +152,7 @@ module cpu(clock, reset);
 
     // EXMEM pipeline register
     always @(posedge clock, negedge reset) begin 
-        if (reset == 1'b0) begin
+        if (~reset) begin
             EXMEM_PCBranch     <= 32'b0;
             EXMEM_ALUOut       <= 32'b0;    
             EXMEM_RegWriteAddr <= 5'b0;
@@ -192,8 +187,6 @@ module cpu(clock, reset);
         end
     end
     
-    assign func = IDEX_signExtend[5:0];
-
     // ALU control
     control_alu control_alu(ALUOp, IDEX_ALUcntrl, func);
     
@@ -213,7 +206,7 @@ module cpu(clock, reset);
 
     // MEMWB pipeline register
     always @(posedge clock or negedge reset) begin 
-        if (reset == 1'b0) begin
+        if (~reset) begin
             MEMWB_DMemOut      <= 32'b0;    
             MEMWB_ALUOut       <= 32'b0;
             MEMWB_RegWriteAddr <= 5'b0;
