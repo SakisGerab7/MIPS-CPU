@@ -1,6 +1,7 @@
 `timescale 1ns/1ps
 `include "constants.h"
 
+
 /************** Main control in ID pipe stage  *************/
 module control_main(RegDst, Branch, MemRead, MemWrite, MemToReg, ALUSrc, RegWrite, ALUcntrl, Jump, opcode);
     output reg       RegDst;
